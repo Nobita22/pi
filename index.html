@@ -402,7 +402,7 @@
 <body>
   <div class="landing-container" tabindex="0" aria-label="Welcome landing page">
     <button id="themeToggle" title="Toggle Light/Dark Theme" aria-live="polite" aria-atomic="true"></button>
-    <h1>Welcome to Your Pi1</h1>
+    <h1>Welcome to Your Pi</h1>
     <div id="connectionStatus" aria-live="polite" aria-atomic="true" aria-label="Connection status">
       <span class="dot" aria-hidden="true"></span>
       <span id="statusText">Checking connection...</span>
@@ -546,20 +546,7 @@
         button.disabled = !enable;
       });
     }
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js').then(registration => {
-        registration.onupdatefound = () => {
-          const newWorker = registration.installing;
-          newWorker.onstatechange = () => {
-            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              window.location.reload();
-            }
-          };
-        };
-      }).catch(console.error);
 
-
-    }
     enableButtons(false);
     checkConnection();
     setInterval(checkConnection, 5000);
