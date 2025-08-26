@@ -6,6 +6,7 @@
   <link rel="manifest" href="manifest.json" />
   <title>My PI</title>
   <style>
+    /* Existing styles (unchanged) */
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Roboto&display=swap');
     /* Reset & base */
     * {
@@ -23,13 +24,10 @@
       overflow: hidden;
       animation: fadeInScale 1s ease forwards;
     }
-    
     @keyframes fadeInScale {
       0% {opacity: 0; transform: scale(0.95);}
       100% {opacity: 1; transform: scale(1);}
     }
-
-    /* Pulsing animation for connection dot */
     @keyframes pulse {
       0%, 100% {
         transform: scale(1);
@@ -40,8 +38,6 @@
         box-shadow: 0 0 14px #4ade80cc;
       }
     }
-
-    /* Container without tilt */
     .landing-container {
       background: rgba(255,255,255,0.07);
       border-radius: 30px;
@@ -56,8 +52,6 @@
       position: relative;
       animation: fadeInScale 1s ease forwards;
     }
-
-    /* Hero Titles */
     h1 {
       font-family: 'Poppins', sans-serif;
       font-weight: 600;
@@ -67,7 +61,6 @@
       margin-bottom: 10px;
       user-select: none;
     }
-    /* Status text with refresh */
     #connectionStatus {
       font-weight: 600;
       font-family: 'Poppins', sans-serif;
@@ -92,7 +85,6 @@
       background-color: #4ade80; /* green */
       animation: pulse 2.5s infinite;
     }
-    /* Minimal Refresh button */
     #refreshBtn {
       background: transparent;
       border: none;
@@ -129,7 +121,6 @@
       color: #cccce7dd;
       user-select: none;
     }
-    /* Theme toggle */
     #themeToggle {
       position: absolute;
       top: 15px;
@@ -156,13 +147,9 @@
       color: var(--bg-gradient-start, #5a11d2);
       outline: none;
     }
-
-    /* Animate theme toggle icon rotation */
     #themeToggle.rotating {
       transform: rotate(360deg);
     }
-
-    /* Buttons */
     .btn-group {
       display: flex;
       gap: 30px;
@@ -185,14 +172,11 @@
       overflow: hidden;
       white-space: nowrap;
     }
-
-    /* Button hover scale & shadow effect */
     button.btn-group-btn:hover:not(:disabled) {
       transform: scale(1.05);
       box-shadow: 0 20px 30px rgba(0, 0, 70, 0.8);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
-
     button.btn-group-btn:focus {
       outline: none;
     }
@@ -252,7 +236,6 @@
       box-shadow: 0 20px 45px #006ee8cc;
       transform: translateY(-5px);
     }
-    /* Ripple effect on buttons */
     button.btn-group-btn:after {
       content: "";
       position: absolute;
@@ -269,7 +252,6 @@
       height: 350%;
       transition: 0s;
     }
-    /* Alert container */
     #alerts {
       position: fixed;
       top: 10px;
@@ -277,7 +259,6 @@
       max-width: 300px;
       z-index: 10000;
     }
-    /* Footer */
     footer {
       position: absolute;
       bottom: 25px;
@@ -287,7 +268,6 @@
       color: #aa99ffbb;
       user-select: none;
     }
-    /* Loading overlay */
     #loadingOverlay {
       position: fixed;
       top: 0; left: 0;
@@ -307,10 +287,9 @@
       opacity: 1;
       transition-delay: 0s;
     }
-    /* Spinner styles */
     .spinner {
-      border: 6px solid #f3f3f3; /* Light grey */
-      border-top: 6px solid #317efb; /* Blue */
+      border: 6px solid #f3f3f3;
+      border-top: 6px solid #317efb;
       border-radius: 50%;
       width: 60px;
       height: 60px;
@@ -346,7 +325,6 @@
         height: 18px;
       }
     }
-    /* Dark/light theme variables */
     :root[data-theme='dark'] {
       --bg-gradient-start: #5a11d2;
       --bg-gradient-end: #927eff;
@@ -357,7 +335,6 @@
       --bg-gradient-end: #cfd8ff;
       --text-color: #222;
     }
-    /* override background and text color based on theme */
     :root[data-theme='light'] body, :root[data-theme='light'] html {
       background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
       color: var(--text-color);
@@ -402,12 +379,11 @@
 <body>
   <div class="landing-container" tabindex="0" aria-label="Welcome landing page">
     <button id="themeToggle" title="Toggle Light/Dark Theme" aria-live="polite" aria-atomic="true"></button>
-    <h1>Welcome to Your Pi</h1>
+    <h1>Welcome to Your Pi4</h1>
     <div id="connectionStatus" aria-live="polite" aria-atomic="true" aria-label="Connection status">
       <span class="dot" aria-hidden="true"></span>
       <span id="statusText">Checking connection...</span>
       <button id="refreshBtn" type="button" aria-label="Refresh connection status" title="Refresh status">
-        <!-- SVG circular arrow -->
         <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
           <path d="M12 4V1L8 5l4 4V6a6 6 0 1 1-6 6H4a8 8 0 1 0 8-8z" />
         </svg>
@@ -433,7 +409,6 @@
     const refreshBtn = document.getElementById('refreshBtn');
     const themeToggle = document.getElementById('themeToggle');
     const alerts = document.getElementById('alerts');
-
     buttons.forEach(button => {
       button.addEventListener('click', (e) => {
         e.preventDefault();
@@ -446,49 +421,40 @@
         }, 50);
       });
     });
-
     refreshBtn.addEventListener('click', (e) => {
       e.preventDefault();
       checkConnection();
     });
-
     window.addEventListener('pageshow', () => {
       loadingOverlay.classList.remove('visible');
     });
-
-    // Function to update the theme toggle button icon and aria-label using Unicode entities
     function updateThemeToggleButton(theme) {
       if (theme === 'light') {
-        // Moon icon for light theme (means switch to dark)
         themeToggle.innerHTML = '&#x1F319;'; // 🌙
         themeToggle.setAttribute('aria-label', 'Switch to dark theme');
         themeToggle.title = 'Switch to Dark Theme';
       } else {
-        // Sun icon for dark theme (means switch to light)
         themeToggle.innerHTML = '&#x2600;'; // ☀️
         themeToggle.setAttribute('aria-label', 'Switch to light theme');
         themeToggle.title = 'Switch to Light Theme';
       }
     }
-
     themeToggle.addEventListener('click', () => {
       const currentTheme = document.documentElement.getAttribute('data-theme');
       const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-      // Animate rotation
       themeToggle.classList.add('rotating');
       setTimeout(() => themeToggle.classList.remove('rotating'), 300);
       document.documentElement.setAttribute('data-theme', newTheme);
       localStorage.setItem('theme', newTheme);
       updateThemeToggleButton(newTheme);
     });
-
     window.addEventListener('load', () => {
       const savedTheme = localStorage.getItem('theme') || 'dark';
       document.documentElement.setAttribute('data-theme', savedTheme);
       updateThemeToggleButton(savedTheme);
+      checkConnection();
+      setInterval(checkConnection, 5000);
     });
-
-    // Alert helper
     function showAlert(message, type = 'warning', timeout = 5000) {
       const alert = document.createElement('div');
       alert.textContent = message;
@@ -501,12 +467,10 @@
       alerts.appendChild(alert);
       setTimeout(() => alerts.removeChild(alert), timeout);
     }
-
     const statusText = document.getElementById('statusText');
     const connectionStatus = document.getElementById('connectionStatus');
     const buttonsArray = Array.from(buttons);
-    const pingUrl = 'http://sameer-desktop.local';
-
+    const pingUrl = 'http://sameer-desktop.local/';
     let lastStatus = null;
 
     async function checkConnection() {
@@ -514,11 +478,16 @@
         statusText.textContent = 'Checking connection...';
       }
       try {
-        await fetch(pingUrl + '?_=' + new Date().getTime(), {
-          mode: 'no-cors',
+        // Perform fetch without 'no-cors' to reliably detect failure
+        const response = await fetch(pingUrl + '?_=' + new Date().getTime(), {
           cache: 'no-store',
+          mode: 'cors' // expect the server to allow CORS for this origin
         });
-        updateStatusIfChanged(true);
+        if (response.ok) {
+          updateStatusIfChanged(true);
+        } else {
+          updateStatusIfChanged(false);
+        }
       } catch (e) {
         updateStatusIfChanged(false);
       }
@@ -537,19 +506,16 @@
           connectionStatus.classList.remove('connected');
           connectionStatus.setAttribute('aria-label', 'Status: Not Connected');
           enableButtons(false);
+          showAlert('Connection lost. Please check your network and Pi device.', 'error');
         }
       }
     }
-
     function enableButtons(enable) {
       buttonsArray.forEach(button => {
         button.disabled = !enable;
       });
     }
-
     enableButtons(false);
-    checkConnection();
-    setInterval(checkConnection, 5000);
   </script>
 </body>
 </html>
