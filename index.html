@@ -546,7 +546,20 @@
         button.disabled = !enable;
       });
     }
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').then(registration => {
+        registration.onupdatefound = () => {
+          const newWorker = registration.installing;
+          newWorker.onstatechange = () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              window.location.reload();
+            }
+          };
+        };
+      }).catch(console.error);
 
+
+    }
     enableButtons(false);
     checkConnection();
     setInterval(checkConnection, 5000);
