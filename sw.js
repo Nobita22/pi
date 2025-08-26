@@ -1,21 +1,17 @@
 importScripts('https://storage.googleapis.com/workbox-cdn/releases/6.5.4/workbox-sw.js');
 
-// Immediately activate the new service worker
 workbox.core.skipWaiting();
 workbox.core.clientsClaim();
 
 if (workbox) {
   console.log('Workbox is loaded');
-
-  // Precache files with explicit revision to ensure update on change
   workbox.precaching.precacheAndRoute([
-    { url: '/pi//index.html', revision: '4' }, // Increment revision on file update
+    { url: '/pi/index.html', revision: '4' },
     { url: '/pi/manifest.json', revision: '3' },
     { url: '/pi/icon2.png', revision: '2' },
-    // Add other assets here with revisioning as needed
   ]);
 
-  // NetworkOnly strategy for local network origin to bypass cache
+  // Bypass cache for requests to local Pi host to always check network
   workbox.routing.registerRoute(
     ({ url }) => url.origin === 'http://sameer-desktop.local',
     new workbox.strategies.NetworkOnly()
@@ -29,21 +25,22 @@ if (workbox) {
     })
   );
 
-  // Cache CSS and JS files with CacheFirst strategy, max age 7 days
+  // Cache CSS and JS with CacheFirst (7 days)
   workbox.routing.registerRoute(
-    ({ url }) => url.origin === self.location.origin &&
-                 (url.pathname.endsWith('.css') || url.pathname.endsWith('.js')),
+    ({ url }) =>
+      url.origin === self.location.origin &&
+      (url.pathname.endsWith('.css') || url.pathname.endsWith('.js')),
     new workbox.strategies.CacheFirst({
       cacheName: 'static-resources',
       plugins: [
         new workbox.expiration.ExpirationPlugin({
-          maxAgeSeconds: 7 * 24 * 60 * 60, // 7 days
+          maxAgeSeconds: 7 * 24 * 60 * 60,
         }),
       ],
     })
   );
 
-  // Network-first strategy for navigation requests (pages)
+  // Network-first for navigation (pages)
   workbox.routing.registerRoute(
     ({ request }) => request.mode === 'navigate',
     new workbox.strategies.NetworkFirst({
@@ -55,7 +52,6 @@ if (workbox) {
       ],
     })
   );
-
 } else {
   console.log('Workbox failed to load');
 }
