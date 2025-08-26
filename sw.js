@@ -9,11 +9,17 @@ if (workbox) {
 
   // Precache files with explicit revision to ensure update on change
   workbox.precaching.precacheAndRoute([
-    { url: '/pi//index.html', revision: '4' },      // Increment revision on file update
+    { url: '/pi//index.html', revision: '4' }, // Increment revision on file update
     { url: '/pi/manifest.json', revision: '2' },
     { url: '/pi/icon2.png', revision: '2' },
     // Add other assets here with revisioning as needed
   ]);
+
+  // NetworkOnly strategy for local network origin to bypass cache
+  workbox.routing.registerRoute(
+    ({ url }) => url.origin === 'http://sameer-desktop.local',
+    new workbox.strategies.NetworkOnly()
+  );
 
   // Cache images with StaleWhileRevalidate strategy
   workbox.routing.registerRoute(
