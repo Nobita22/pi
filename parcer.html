@@ -2,80 +2,26 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>WhatsApp Chat Viewer</title>
+    <title>hatsApp Chat Viewerrr</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <!-- FontAwesome for icons (CDN) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
-        body {
-            background: #ece5dd;
-            font-family: 'Segoe UI', sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            max-width: 550px;
-            margin: 40px auto;
-            background: #fff;
-            border-radius: 9px;
-            box-shadow: 0 3px 17px #0002;
-            overflow: hidden;
-        }
-        .header {
-            background: #075e54;
-            color: #fff;
-            padding: 20px;
-            font-size: 1.5em;
-            text-align: center;
-        }
-        .chat-box {
-            max-height: 600px;
-            overflow-y: auto;
-            padding: 20px 10px 10px 10px;
-            background: #ece5dd;
-        }
-        .message {
-            margin: 10px;
-            padding: 10px;
-            border-radius: 7px;
-            max-width: 80%;
-            background: #dcf8c6;
-            box-shadow: 0 2px 8px #aaa2;
-            position: relative;
-            word-break: break-word;
-        }
-        .message.me {
-            background: #fff;
-            align-self: flex-end;
-            border: 1px solid #dcf8c6;
-        }
-        .name {
-            font-size: .9em;
-            font-weight: 600;
-            color: #075e54;
-            margin-bottom: 2px;
-        }
-        .time {
-            color: #888;
-            font-size: 0.75em;
-            position: absolute;
-            bottom: 6px;
-            right: 10px;
-        }
-        .media {
-            max-width: 90%;
-            border-radius: 5px;
-            margin: 8px 0;
-        }
-        .upload-section {
-            padding: 24px;
-            text-align: center;
-        }
-        .upload-section input[type='file'] {
-            padding: 8px;
-            border-radius: 4px;
-        }
+        body { background: #ece5dd; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; }
+        .container { max-width: 540px; margin: 36px auto; background: #fff; border-radius: 9px;
+            box-shadow: 0 3px 17px #0001; overflow: hidden; }
+        .header { background: #075e54; color: #fff; padding: 20px; font-size: 1.5em; text-align: center; }
+        .chat-box { max-height: 640px; overflow-y: auto; padding: 20px 12px 12px 12px; background: #ece5dd; display: flex; flex-direction: column; }
+        .message { margin: 10px 0; padding: 10px; border-radius: 7px; max-width: 85%; background: #dcf8c6;
+            position: relative; box-shadow: 0 2px 8px #aaa2; word-break: break-word; min-width: 70px;}
+        .message.me { background: #fff; border: 1px solid #dcf8c6; align-self: flex-end;}
+        .name { font-size: .95em; font-weight: 600; color: #075e54; margin-bottom: 2px;}
+        .time { color: #888; font-size: 0.78em; position: absolute; bottom: 6px; right: 16px;}
+        .media { max-width: 94%; border-radius: 6px; margin: 10px 0; display: block;}
+        .upload-section { padding: 20px; text-align: center;}
+        .upload-section input[type='file'] { padding: 8px 0; }
+        @media (max-width:600px) { .container{max-width:100vw;} }
     </style>
 </head>
 <body>
@@ -85,9 +31,9 @@
     </div>
     <div class="upload-section">
         <input type="file" id="zipInput" accept=".zip"/>
-        <p style="font-size:0.96em;color:#555;">Select your exported WhatsApp ZIP file (with 'txt' chat and media)</p>
+        <p style="font-size:0.96em;color:#555;">Select exported WhatsApp ZIP (with .txt & media)</p>
     </div>
-    <div class="chat-box" id="chatBox" style="display:none;flex-direction:column;"></div>
+    <div class="chat-box" id="chatBox" style="display:none;"></div>
 </div>
 <script>
     const zipInput = document.getElementById('zipInput');
@@ -99,18 +45,13 @@
             ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
     }
 
-    function parseMessageLine(line) {
-        // Format: 01/08/2025, 18:57 - Name: Message
-        const regex = /^(\d{1,2}\/\d{1,2}\/\d{2,4}), (\d{2}:\d{2}) - (.*?): (.*)$/;
-        const match = line.match(regex);
-        if (match) {
-            return {
-                date: match[10],
-                time: match[9],
-                name: match[11],
-                text: match[12]
-            };
-        }
+    function detectAndParseLine(line) {
+        // [mm/dd/yy, hh:mm] Name: Message
+        let m = line.match(/^\[(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}), (\d{2}:\d{2})\] (.*?): (.*)$/);
+        if (m) return {date: m[1], time: m[2], name: m[3], text: m[4]};
+        // dd/mm/yyyy, hh:mm - Name: Message
+        m = line.match(/^(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}), (\d{2}:\d{2}) - (.*?): (.*)$/);
+        if (m) return {date: m[1], time: m[2], name: m[3], text: m[4]};
         return null;
     }
 
@@ -119,101 +60,72 @@
         let chatTextFile = null;
         mediaFiles = {};
 
-        // Find txt and media
         zip.forEach((relativePath, zipEntry) => {
-            if (zipEntry.name.match(/\.txt$/i)) {
+            if (!chatTextFile && zipEntry.name.toLowerCase().endsWith('.txt') && !zipEntry.dir)
                 chatTextFile = zipEntry;
-            } else if (zipEntry.name.match(/\.(jpg|jpeg|png|gif|mp4|opus|ogg|webm)$/i)) {
-                // Store as media, indexed by filename for lookup later
+            else if (zipEntry.name.match(/\.(jpg|jpeg|png|gif|mp4|opus|ogg|webm|mp3)$/i))
                 mediaFiles[zipEntry.name.split('/').pop()] = zipEntry;
-            }
         });
-        if (!chatTextFile) {
-            alert('No chat .txt file found!');
-            return;
-        }
+
+        if (!chatTextFile) { alert('No chat text file found in ZIP!'); return; }
         const chatText = await chatTextFile.async('string');
-        showChat(chatText);
+        renderChat(chatText);
     }
 
-    function findMediaEmbed(match, done) {
-        let clean = match.trim().replace(/^([>\- ]+)/, '');
-        let name = Object.keys(mediaFiles).find(fn => clean.includes(fn));
-        if (!name) return done(match);
-        mediaFiles[name].async("base64").then(base64 => {
-            let ext = name.split('.').pop().toLowerCase();
-            let prefix;
-            if (['jpg','jpeg','png','gif'].includes(ext))
-                prefix = `data:image/${ext==='jpg'?'jpeg':ext};base64,`;
-            else if (['mp4','webm'].includes(ext))
-                prefix = `data:video/${ext};base64,`;
-            else if (['opus','ogg','mp3'].includes(ext))
-                prefix = `data:audio/${ext};base64,`;
-            else return done(match);
-
-            let mediaTag;
-            if (prefix.startsWith('data:image')) {
-                mediaTag = `<br/><img src="${prefix+base64}" class="media"/>`;
-            } else if (prefix.startsWith('data:video')) {
-                mediaTag = `<br/><video controls class="media"><source src="${prefix+base64}"></video>`;
-            } else if (prefix.startsWith('data:audio')) {
-                mediaTag = `<br/><audio controls class="media"><source src="${prefix+base64}"></audio>`;
+    function findAndEmbedMedia(line, callback) {
+        let found = false;
+        // WhatsApp references media by filename in message line
+        const mediaPat = /(?:attached|)(\S+\.(jpg|jpeg|png|gif|mp4|opus|ogg|webm|mp3))/i;
+        let match = line.match(mediaPat);
+        if (!match) { callback(escapeHtml(line)); return; }
+        let filename = match[1] || match[0];
+        let zipMedia = mediaFiles[filename];
+        if (!zipMedia) { callback(escapeHtml(line)); return; }
+        zipMedia.async('base64').then(base64 => {
+            let ext = filename.split('.').pop().toLowerCase();
+            let tag = '';
+            if (['jpg','jpeg','png','gif'].includes(ext)) {
+                tag = `<br><img class="media" src="data:image/${ext=='jpg'?'jpeg':ext};base64,${base64}">`;
             }
-            done(mediaTag);
+            else if (['mp4','webm'].includes(ext)) {
+                tag = `<br><video class="media" controls><source src="data:video/${ext};base64,${base64}"></video>`;
+            }
+            else if (['opus','ogg','mp3'].includes(ext)) {
+                tag = `<br><audio class="media" controls><source src="data:audio/${ext};base64,${base64}"></audio>`;
+            }
+            // Remove filename and insert tag
+            callback(escapeHtml(line.replace(filename, '')).replace(/\s+$/, '') + tag);
         });
     }
 
-    function showChat(text) {
+    function renderChat(text) {
         chatBox.innerHTML = '';
         chatBox.style.display = 'flex';
         const lines = text.split(/\r?\n/);
-        let lastName = '';
-        let pending = 0;
-
-        function appendMsg(obj, after) {
-            const isMe = (obj.name.toLowerCase().includes('you') || obj.name.toLowerCase().includes('me'));
-            let message = escapeHtml(obj.text);
-            // Media
-            let maybeMedia = /\S+\.(jpg|jpeg|png|gif|mp4|opus|ogg|webm|mp3)/i.exec(message);
-            if (maybeMedia) {
-                pending++;
-                findMediaEmbed(maybeMedia, mediaHtml => {
-                    message = message.replace(maybeMedia, mediaHtml);
-                    chatBox.innerHTML += `
-                        <div class="message${isMe ? ' me' : ''}">
-                            <div class="name">${escapeHtml(obj.name)}</div>
-                            ${message}
-                            <span class="time">${obj.time}</span>
-                        </div>
-                    `;
-                    pending--;
-                    if (pending===0) chatBox.scrollTop = chatBox.scrollHeight;
-                    if (after) after();
-                });
-                return;
-            }
-            chatBox.innerHTML += `
-                <div class="message${isMe ? ' me' : ''}">
-                    <div class="name">${escapeHtml(obj.name)}</div>
-                    ${message}
-                    <span class="time">${obj.time}</span>
-                </div>
-            `;
-            if (after) after();
+        let index = 0;
+        function processNext() {
+            if (index >= lines.length) { chatBox.scrollTop = chatBox.scrollHeight; return; }
+            let obj = detectAndParseLine(lines[index]);
+            index++;
+            if (!obj) { processNext(); return; }
+            const isMe = /^(you|me)$/i.test(obj.name.trim());
+            // Async media loader
+            findAndEmbedMedia(obj.text, inner => {
+                chatBox.innerHTML += `
+                    <div class="message${isMe ? ' me' : ''}">
+                        <div class="name">${escapeHtml(obj.name)}</div>
+                        ${inner}
+                        <span class="time">${escapeHtml(obj.time)}</span>
+                    </div>`;
+                processNext();
+            });
         }
-
-        function processLine(i) {
-            if (i >= lines.length) return;
-            const obj = parseMessageLine(lines[i]);
-            if (obj) appendMsg(obj, () => processLine(i+1));
-            else processLine(i+1);
-        }
-        processLine(0);
+        processNext();
     }
 
     zipInput.addEventListener('change', e => {
-        if (zipInput.files && zipInput.files) {
-            handleZip(zipInput.files);
+        if (zipInput.files && zipInput.files[0]) {
+            handleZip(zipInput.files[0]);
         }
     });
 </script>
